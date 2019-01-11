@@ -1,0 +1,48 @@
+version: '3.3'
+
+services:
+
+    node:
+        build:
+            context: ./node
+            args:
+                - NODE_VERSION=latest
+                - PROJECT_PATH=/opt/app/node-user-api
+                - NODE_ENV=development
+                - YARN=false
+                - SECRET=MIIBOwIBAAJBAMjFBlUDovvVJlYh5QPSNiL0h0ioYDY5RdF1gNtD6wHFqISETcu3MijXkWmtCq+QHEzDHR2Vd8pKe5nMOja+59UCAwEAAQJBAJR5ME+amuOGJA26jzSeNq7vC0TuUAiJnlpifWKp/ZeWl8ea7QXcOIk/pKDJGQ1t6PezMxAAlsbV6He44BfD1lkCIQDmQQdruXPNUxX4erkxIrHo6AX9oBDClTU4lRpj6s23UwIhAN84AvAzs+De95oNCmJHWd9mfdRUtgnBQ9/Sxa1uacc3AiBJBXaFA1tmUmM1WjZBDu+9HVhJBupJy2gFecPUzDJRYQIgD/6bd0q9IOfZJhi5HcGvFurpKUXIpXpLusYHlB3NRpECIQC+dNS3nVPUtdpEQYZXtJOFNqCSQjNi82iXCngPVFFT5g==
+                - TOKEN_EXP_TIME=5m
+                - DB_DIALECT=mysql
+                - MYSQL_HOST=database
+                - MYSQL_DATABASE=userSignApi
+                - MYSQL_USER=root
+                - MYSQL_PASSWORD=apiUserNode
+                - MYSQL_PORT=3306
+
+        volumes:
+        #    - ../:/opt/app/user-sign-api
+             - ./data/node/:/opt/app/node-user-api
+        entrypoint: run-nodock "node ."
+        tty: true
+        expose:
+             - "3000"
+        ports:
+             - 3000:3000
+        links:
+             - "mysql:database"
+
+    mysql:
+        build:
+            context: ./mysql
+            args:
+                - MYSQL_DATABASE=userSignApi
+                - MYSQL_USER=root
+                - MYSQL_PASSWORD=apiUserNode
+                - MYSQL_ROOT_PASSWORD=apiUserNode
+        volumes:
+            - ./data/mysql/:/var/lib/mysql
+        expose:
+            - "3306"
+        ports:
+             - 3306:3306
+
